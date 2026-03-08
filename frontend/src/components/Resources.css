@@ -1,0 +1,95 @@
+/* ─── Resources & Support ─── */
+.resources {
+  background: linear-gradient(160deg, #f0fdf4 0%, #ecfdf5 50%, #f0f9ff 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.resources::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: -60px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.resource-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.5rem !important;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s !important;
+  border-top: 3px solid transparent;
+}
+
+.resource-card:hover {
+  transform: translateY(-6px) scale(1.01) !important;
+  border-top-color: var(--primary);
+  box-shadow: 0 16px 40px rgba(79, 70, 229, 0.12) !important;
+}
+
+.resource-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  background: linear-gradient(135deg, var(--primary-soft), var(--accent-soft));
+  border: 1px solid rgba(79, 70, 229, 0.1);
+  flex-shrink: 0;
+}
+
+.resource-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--font-display);
+  line-height: 1.4;
+}
+
+.resource-card p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.resource-card .btn-ghost {
+  align-self: flex-start;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  color: var(--primary);
+  border-radius: 10px;
+  background: var(--primary-soft);
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.resource-card .btn-ghost:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--primary-glow);
+}
+
+@media (max-width: 480px) {
+  .resources-grid {
+    grid-template-columns: 1fr;
+  }
+}

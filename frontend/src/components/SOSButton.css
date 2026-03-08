@@ -1,0 +1,166 @@
+/* ─── Floating SOS Panic Button ─── */
+.sos-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff1744, #d50000);
+    color: white;
+    box-shadow: 0 4px 20px rgba(255, 23, 68, 0.6);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+    animation: sos-pulse 2s infinite;
+}
+
+@keyframes sos-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 4px 20px rgba(255, 23, 68, 0.6);
+    }
+
+    50% {
+        box-shadow: 0 6px 32px rgba(255, 23, 68, 0.9);
+    }
+}
+
+.sos-fab:hover {
+    transform: scale(1.12);
+    box-shadow: 0 8px 36px rgba(255, 23, 68, 0.85);
+    animation: none;
+}
+
+.sos-fab:active {
+    transform: scale(0.96);
+}
+
+.sos-fab--active {
+    animation: none;
+}
+
+.sos-fab-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.sos-fab-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    font-family: var(--font-display);
+}
+
+/* Ripple rings */
+.sos-fab-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 23, 68, 0.5);
+    animation: sos-ring 2s infinite;
+}
+
+.sos-fab-ring--2 {
+    animation-delay: 0.6s;
+}
+
+@keyframes sos-ring {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.7);
+        opacity: 0;
+    }
+}
+
+/* ─── Overlay / Modal ─── */
+.sos-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease;
+    backdrop-filter: blur(6px);
+}
+
+.sos-modal {
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(255, 23, 68, 0.25);
+    animation: scaleIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.sos-modal-icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    animation: bounce 1.2s infinite;
+}
+
+.sos-modal-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+}
+
+.sos-modal-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.sos-modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.sos-confirm-btn,
+.sos-cancel-btn {
+    flex: 1;
+    min-width: 120px;
+    max-width: 180px;
+}
+
+.sos-countdown {
+    font-size: 5rem;
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: #ff1744;
+    line-height: 1;
+    margin: 0.5rem 0 1rem;
+    animation: sos-count-pulse 1s infinite;
+}
+
+@keyframes sos-count-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+}

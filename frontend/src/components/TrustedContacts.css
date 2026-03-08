@@ -1,0 +1,230 @@
+.trusted-contacts {
+  animation: slideInUp var(--duration-normal) ease-out;
+}
+
+.add-contact-btn {
+  display: block;
+  margin: 0 auto 2rem;
+  animation: slideInUp var(--duration-normal) ease-out 0.1s both;
+}
+
+/* Contact Form */
+.contact-form {
+  max-width: 540px;
+  margin: 0 auto 2rem;
+  padding: 2rem;
+  animation: slideInUp var(--duration-normal) ease-out 0.1s both;
+}
+
+.contact-form h3 {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+  animation: slideInUp var(--duration-normal) ease-out 0.15s both;
+}
+
+.form-group label {
+  display: block;
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--primary-soft);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--text);
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(13, 92, 99, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  animation: slideInUp var(--duration-normal) ease-out 0.2s both;
+}
+
+.form-actions .btn {
+  flex: 1;
+}
+
+/* Contacts Grid */
+.contacts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.trusted-contact-card {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  animation: slideInUp var(--duration-normal) ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.trusted-contact-card:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.trusted-contact-card:nth-child(3) {
+  animation-delay: 0.1s;
+}
+
+.trusted-contact-card:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+.trusted-contact-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-6px);
+}
+
+.contact-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.contact-info {
+  flex: 1;
+}
+
+.contact-name {
+  font-size: 1.2rem;
+  color: var(--primary);
+  margin: 0;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.contact-relationship {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+  font-style: italic;
+}
+
+.contact-actions-menu {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  padding: 0.5rem;
+  background: var(--primary-soft);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background var(--duration-fast), transform var(--duration-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  background: var(--primary);
+  transform: scale(1.1);
+}
+
+.edit-btn:hover {
+  background: var(--primary);
+}
+
+.delete-btn:hover {
+  background: #ff6b6b;
+}
+
+.contact-number {
+  margin-bottom: 1rem;
+}
+
+.phone-link {
+  display: inline-block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+  word-break: break-word;
+}
+
+.contact-notes {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 0.75rem;
+  background: var(--primary-soft);
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.contact-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.contact-buttons .btn {
+  flex: 1;
+  font-size: 0.9rem;
+  padding: 0.65rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  animation: fadeIn var(--duration-normal) ease-out 0.2s both;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contact-form {
+    padding: 1.5rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+
+  .contacts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-buttons {
+    flex-direction: column;
+  }
+
+  .contact-buttons .btn {
+    width: 100%;
+  }
+}

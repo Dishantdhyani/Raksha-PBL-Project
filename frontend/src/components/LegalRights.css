@@ -1,0 +1,197 @@
+/* ─── Legal Rights Section ─── */
+.legal-rights {
+    background: linear-gradient(160deg, #0f0c29, #302b63, #24243e);
+    position: relative;
+    overflow: hidden;
+}
+
+.legal-rights::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    left: -80px;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.legal-top {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.legal-badge {
+    display: inline-block;
+    background: rgba(124, 58, 237, 0.25);
+    border: 1px solid rgba(124, 58, 237, 0.5);
+    color: #c4b5fd;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+}
+
+.legal-rights .section-title {
+    color: #f1f5f9;
+}
+
+.legal-rights .section-subtitle {
+    color: #94a3b8;
+}
+
+/* Grid */
+.rights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Right Card */
+.right-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.right-card:hover {
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.right-card.expanded {
+    border-color: var(--card-color);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+.right-card-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: #f1f5f9;
+    transition: background 0.2s;
+}
+
+.right-card-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.right-icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--card-color);
+    flex-shrink: 0;
+}
+
+.right-icon {
+    font-size: 1.5rem;
+}
+
+.right-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.right-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 0.2rem;
+}
+
+.right-law {
+    font-size: 0.75rem;
+    color: var(--card-color);
+    font-weight: 500;
+}
+
+.right-chevron {
+    font-size: 0.7rem;
+    color: #64748b;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+}
+
+.right-card.expanded .right-chevron {
+    transform: rotate(180deg);
+}
+
+/* Accordion Body */
+.right-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+}
+
+.right-body.open {
+    max-height: 400px;
+}
+
+.right-points {
+    list-style: none;
+    padding: 0 1.25rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.right-points li {
+    display: flex;
+    gap: 0.6rem;
+    font-size: 0.875rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+.right-bullet {
+    color: var(--card-color);
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    margin-top: 4px;
+}
+
+/* Footer note */
+.legal-footer-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    max-width: 640px;
+    margin: 2rem auto 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    line-height: 1.6;
+}
+
+.legal-footer-note a {
+    color: #818cf8;
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .rights-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -287,3 +287,10 @@
     height: 80vh;
   }
 }
+.msg-bubble.bot p { margin-bottom: 0.5rem; margin-top: 0; }
+.msg-bubble.bot p:last-child { margin-bottom: 0; }
+.msg-bubble.bot ul, .msg-bubble.bot ol { margin-top: 0.25rem; margin-bottom: 0.5rem; padding-left: 1.25rem; }
+.msg-bubble.bot li { margin-bottom: 0.25rem; }
+.msg-bubble.bot strong { font-weight: 600; color: inherit; }
+.msg-bubble.bot a { color: #0056b3; text-decoration: underline; }
+

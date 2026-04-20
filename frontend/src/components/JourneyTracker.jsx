@@ -67,10 +67,14 @@ export default function JourneyTracker() {
                         clearInterval(timerRef.current)
                         setRunning(false)
                         setStatus('alert')
+                        
+                        // Fire automatic SOS
+                        triggerAutomaticSOS()
+
                         // Browser notification
                         if ('Notification' in window && Notification.permission === 'granted') {
                             new Notification('🚨 Raksha – Journey Timer Expired!', {
-                                body: 'Your safety timer has ended. Are you safe? Please check in.',
+                                body: 'Your safety timer has ended. SOS has been triggered automatically.',
                                 icon: '/vite.svg',
                             })
                         }
@@ -82,6 +86,43 @@ export default function JourneyTracker() {
         }
         return () => clearInterval(timerRef.current)
     }, [running])
+
+    const triggerAutomaticSOS = async () => {
+        try {
+            const token = localStorage.getItem('token')
+            if (!token) return
+
+            let current_location = 'Location unknown'
+            if (navigator.geolocation) {
+                await new Promise((resolve) => {
+                    navigator.geolocation.getCurrentPosition((pos) => {
+                        current_location = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`
+                        resolve()
+                    }, () => resolve())
+                })
+            }
+
+            const response = await fetch('http://localhost:5000/api/journeys/sos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ 
+                    current_location, 
+                    destination: destination || 'Unspecified location',
+                    time_passed: minutes
+                })
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                alert(`🚨 Time expired! Automatic SOS Alert sent to: ${data.notify_contacts.join(', ')}`)
+            }
+        } catch (err) {
+            console.error('Failed to trigger automatic SOS:', err)
+        }
+    }
 
     const requestNotificationPermission = () => {
         if ('Notification' in window && Notification.permission === 'default') {
@@ -127,16 +168,16 @@ export default function JourneyTracker() {
                                 <label className="jt-label">
                                     Journey duration (minutes)
                                     <div className="jt-minutes-row">
-                                        <button className="jt-adj-btn" onClick={() => setMinutes(m => Math.max(5, m - 5))}>−</button>
+                                        <button className="jt-adj-btn" onClick={() => setMinutes(m => Math.max(1, m - 1))}>−</button>
                                         <input
                                             type="number"
                                             className="jt-minutes-input"
                                             value={minutes}
-                                            min={5}
+                                            min={1}
                                             max={180}
                                             onChange={e => setMinutes(Number(e.target.value))}
                                         />
-                                        <button className="jt-adj-btn" onClick={() => setMinutes(m => Math.min(180, m + 5))}>+</button>
+                                        <button className="jt-adj-btn" onClick={() => setMinutes(m => Math.min(180, m + 1))}>+</button>
                                     </div>
                                 </label>
                                 <div className="jt-presets">
@@ -151,7 +192,7 @@ export default function JourneyTracker() {
                                 <button
                                     className="btn btn-primary jt-start-btn"
                                     onClick={() => { start(); requestNotificationPermission() }}
-                                    disabled={minutes < 5 || minutes > 180}
+                                    disabled={minutes < 1 || minutes > 180}
                                 >
                                     🚀 Start Journey Timer
                                 </button>

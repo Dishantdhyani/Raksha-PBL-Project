@@ -10,23 +10,40 @@ export default function TrustedContacts() {
   const [toastMessage, setToastMessage] = useState('')
   const [formData, setFormData] = useState({
     name: '',
-    number: '',
+    email: '',
     relationship: '',
     notes: '',
   })
 
-  // Load contacts from localStorage on mount
+  // Load contacts from database on mount
   useEffect(() => {
-    const saved = localStorage.getItem('raksha_trusted_contacts')
-    if (saved) {
-      setContacts(JSON.parse(saved))
-    }
+    fetchContacts()
   }, [])
 
-  // Save contacts to localStorage
-  const saveContacts = (newContacts) => {
-    setContacts(newContacts)
-    localStorage.setItem('raksha_trusted_contacts', JSON.stringify(newContacts))
+  const fetchContacts = async () => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+
+    try {
+      const res = await fetch('http://localhost:5000/api/contacts', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        // Map backend columns to frontend variables
+        const mapped = data.map(c => ({
+          id: c.id,
+          name: c.name,
+          email: c.phone_number,
+          relationship: c.relation || '',
+        }))
+        setContacts(mapped)
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   const handleInputChange = (e) => {
@@ -34,36 +51,56 @@ export default function TrustedContacts() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleAddContact = () => {
-    if (!formData.name.trim() || !formData.number.trim()) {
-      setToastMessage('Please fill in name and number')
+  const handleAddContact = async () => {
+    if (!formData.name.trim() || !formData.email.trim()) {
+      setToastMessage('Please fill in name and email')
       setShowToast(true)
       return
     }
 
-    if (editingId) {
-      // Edit existing contact
-      const updatedContacts = contacts.map(c =>
-        c.id === editingId
-          ? { ...c, ...formData }
-          : c
-      )
-      saveContacts(updatedContacts)
-      setToastMessage('Contact updated successfully')
-      setEditingId(null)
-    } else {
-      // Add new contact
-      const newContact = {
-        id: Date.now(),
-        ...formData,
-      }
-      saveContacts([...contacts, newContact])
-      setToastMessage('Contact added successfully')
+    const token = localStorage.getItem('token')
+    if (!token) {
+      setToastMessage('You must be logged in to save contacts')
+      setShowToast(true)
+      return
     }
 
-    setFormData({ name: '', number: '', relationship: '', notes: '' })
-    setShowForm(false)
-    setShowToast(true)
+    try {
+      if (editingId) {
+        // Edit existing contact - Not supported in backend yet, just show toast
+        setToastMessage('Edit feature connecting soon!')
+        setEditingId(null)
+      } else {
+        // Add new contact to database
+        const res = await fetch('http://localhost:5000/api/contacts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            phone_number: formData.email, // Passing email in the DB's phone_number column
+            relation: formData.relationship
+          })
+        })
+
+        if (res.ok) {
+          await fetchContacts()
+          setToastMessage('Contact added safely to database')
+        } else {
+          setToastMessage('Failed to add contact')
+        }
+      }
+      
+      setFormData({ name: '', email: '', relationship: '', notes: '' })
+      setShowForm(false)
+      setShowToast(true)
+    } catch (err) {
+      console.error(err)
+      setToastMessage('Network Error')
+      setShowToast(true)
+    }
   }
 
   const handleEditContact = (contact) => {
@@ -72,24 +109,35 @@ export default function TrustedContacts() {
     setShowForm(true)
   }
 
-  const handleDeleteContact = (id) => {
+  const handleDeleteContact = async (id) => {
     if (confirm('Are you sure you want to delete this contact?')) {
-      const updatedContacts = contacts.filter(c => c.id !== id)
-      saveContacts(updatedContacts)
-      setToastMessage('Contact deleted')
-      setShowToast(true)
+      const token = localStorage.getItem('token')
+      try {
+        const res = await fetch(`http://localhost:5000/api/contacts/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        if (res.ok) {
+          await fetchContacts()
+          setToastMessage('Contact deleted securely')
+          setShowToast(true)
+        }
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 
-  const handleCall = (number) => {
-    const clean = number.replace(/-/g, '')
-    window.open(`tel:${clean}`, '_self')
+  const handleEmail = (emailAddress) => {
+    window.open(`mailto:${emailAddress}`, '_self')
   }
 
   const handleCancel = () => {
     setShowForm(false)
     setEditingId(null)
-    setFormData({ name: '', number: '', relationship: '', notes: '' })
+    setFormData({ name: '', email: '', relationship: '', notes: '' })
   }
 
   return (
@@ -121,12 +169,12 @@ export default function TrustedContacts() {
           </div>
 
           <div className="form-group">
-            <label>Phone Number *</label>
+            <label>Contact Email Address *</label>
             <input
-              type="tel"
-              name="number"
-              placeholder="e.g., +91 98765 43210"
-              value={formData.number}
+              type="email"
+              name="email"
+              placeholder="e.g., mom@gmail.com"
+              value={formData.email}
               onChange={handleInputChange}
               className="form-input"
             />
@@ -198,8 +246,8 @@ export default function TrustedContacts() {
                 </div>
 
                 <div className="contact-number">
-                  <a href={`tel:${contact.number.replace(/-/g, '')}`} className="phone-link">
-                    📞 {contact.number}
+                  <a href={`mailto:${contact.email}`} className="phone-link">
+                    📧 {contact.email}
                   </a>
                 </div>
 
@@ -210,15 +258,15 @@ export default function TrustedContacts() {
                 <div className="contact-buttons">
                   <button
                     className="btn btn-accent"
-                    onClick={() => handleCall(contact.number)}
+                    onClick={() => handleEmail(contact.email)}
                   >
-                    📞 Call
+                    📧 Email
                   </button>
                   <button
                     className="btn btn-primary"
                     onClick={() => {
-                      navigator.clipboard.writeText(contact.number)
-                      setToastMessage(`${contact.name}'s number copied`)
+                      navigator.clipboard.writeText(contact.email)
+                      setToastMessage(`${contact.name}'s email copied`)
                       setShowToast(true)
                     }}
                   >

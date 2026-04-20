@@ -1,12 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import './Login.css'
 
-// ─── Hardcoded Credentials ───────────────────────────────────────────
+// ─── Hardcoded Credentials (Admin only) ──────────────────────────────
 const CREDENTIALS = {
-    user: {
-        email: 'raksha@user.com',
-        password: 'safety123',
-    },
     admin: {
         email: 'raksha@admin.com',
         password: 'admin@1234',
@@ -17,6 +13,8 @@ const CREDENTIALS = {
 
 export default function Login({ onLogin }) {
     const [tab, setTab] = useState('user') // 'user' | 'admin'
+    const [isSignUp, setIsSignUp] = useState(false) // Toggle inside 'user' tab
+    const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [showPass, setShowPass] = useState(false)
@@ -26,14 +24,15 @@ export default function Login({ onLogin }) {
     const [shake, setShake] = useState(false)
     const codeRefs = [useRef(), useRef(), useRef(), useRef()]
 
-    // Reset fields on tab switch
+    // Reset fields on tab or mode switch
     useEffect(() => {
+        setName('')
         setEmail('')
         setPassword('')
         setCode(['', '', '', ''])
         setError('')
         setShowPass(false)
-    }, [tab])
+    }, [tab, isSignUp])
 
     const handleCodeInput = (value, i) => {
         if (!/^\d*$/.test(value)) return
@@ -55,24 +54,42 @@ export default function Login({ onLogin }) {
         setTimeout(() => setShake(false), 600)
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
         setLoading(true)
 
-        setTimeout(() => {
-            setLoading(false)
+        if (tab === 'user') {
+            try {
+                // Call actual backend API
+                const endpoint = isSignUp ? '/api/auth/register' : '/api/auth/login'
+                const body = isSignUp ? { name, email, password } : { email, password }
 
-            if (tab === 'user') {
-                if (
-                    email.trim().toLowerCase() === CREDENTIALS.user.email &&
-                    password === CREDENTIALS.user.password
-                ) {
-                    onLogin({ role: 'user', email })
+                const response = await fetch(`http://localhost:5000${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                })
+
+                const data = await response.json()
+
+                if (response.ok) {
+                    // Success! Save token and pass user data to parent App.jsx
+                    localStorage.setItem('token', data.token)
+                    onLogin({ role: 'user', ...data.user })
                 } else {
-                    triggerError('Invalid email or password. Please try again.')
+                    triggerError(data.error || 'Something went wrong. Please try again.')
                 }
-            } else {
+            } catch (err) {
+                console.error(err)
+                triggerError('Failed to connect to the server. Is it running?')
+            } finally {
+                setLoading(false)
+            }
+        } else {
+            // Admin logic (still hardcoded for demo purposes)
+            setTimeout(() => {
+                setLoading(false)
                 const enteredCode = code.join('')
                 if (
                     email.trim().toLowerCase() === CREDENTIALS.admin.email &&
@@ -85,12 +102,12 @@ export default function Login({ onLogin }) {
                 } else {
                     triggerError('Incorrect admin access code. Please try again.')
                 }
-            }
-        }, 900)
+            }, 900)
+        }
     }
 
     const isFormValid = tab === 'user'
-        ? email.trim() && password.length >= 6
+        ? (isSignUp ? name.trim() && email.trim() && password.length >= 6 : email.trim() && password.length >= 6)
         : email.trim() && password.length >= 6 && code.every(d => d !== '')
 
     return (
@@ -133,9 +150,47 @@ export default function Login({ onLogin }) {
 
                 {/* Form */}
                 <form className="login-form" onSubmit={handleSubmit} noValidate>
+                    {/* Mode Toggle (only for User tab) */}
+                    {tab === 'user' && (
+                        <div className="login-mode-toggle">
+                            <span 
+                                className={`login-mode-btn ${!isSignUp ? 'active' : ''}`}
+                                onClick={() => setIsSignUp(false)}
+                            >
+                                Sign In
+                            </span>
+                            <span 
+                                className={`login-mode-btn ${isSignUp ? 'active' : ''}`}
+                                onClick={() => setIsSignUp(true)}
+                            >
+                                Sign Up
+                            </span>
+                        </div>
+                    )}
+
+                    {/* Name (Only for User Sign Up) */}
+                    {tab === 'user' && isSignUp && (
+                        <div className="login-field">
+                            <label className="login-label" htmlFor="login-name">Full Name</label>
+                            <div className="login-input-wrap">
+                                <span className="login-input-icon">👤</span>
+                                <input
+                                    id="login-name"
+                                    type="text"
+                                    className="login-input"
+                                    placeholder="Enter your name"
+                                    value={name}
+                                    onChange={e => setName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     {/* Email */}
                     <div className="login-field">
                         <label className="login-label" htmlFor="login-email">Email address</label>
+
                         <div className="login-input-wrap">
                             <span className="login-input-icon">✉️</span>
                             <input
@@ -218,18 +273,17 @@ export default function Login({ onLogin }) {
                         {loading ? (
                             <><span className="login-spinner" /> Verifying…</>
                         ) : (
-                            <>{tab === 'user' ? '🚀 Sign In' : '🔐 Admin Access'}</>
+                            <>{tab === 'user' ? (isSignUp ? '✨ Create Account' : '🚀 Sign In') : '🔐 Admin Access'}</>
                         )}
                     </button>
                 </form>
 
                 {/* Credentials hint */}
                 <div className="login-hint-box">
-                    <p className="login-hint-title">Demo credentials</p>
+                    <p className="login-hint-title">Demo credentials (Backend Demo)</p>
                     {tab === 'user' ? (
                         <div className="login-hint-creds">
-                            <span>📧 <strong>raksha@user.com</strong></span>
-                            <span>🔑 <strong>safety123</strong></span>
+                            <span>💡 <strong>Create a new account</strong> safely stored in the PostgreSQL database, or log in if you already created one.</span>
                         </div>
                     ) : (
                         <div className="login-hint-creds">

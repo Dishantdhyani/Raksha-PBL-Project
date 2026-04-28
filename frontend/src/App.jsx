@@ -15,6 +15,21 @@ import Footer from './components/Footer'
 import ChatBot from './components/ChatBot'
 import SOSButton from './components/SOSButton'
 
+import { Routes, Route } from 'react-router-dom'
+
+// Layout for the main single-page sections
+function MainHome() {
+  return (
+    <>
+      <Hero />
+      <EmergencyContacts />
+      <TrustedContacts />
+      <SafetyTools />
+      <JourneyTracker />
+    </>
+  )
+}
+
 function App() {
   const [user, setUser] = useState(null)   // null = not logged in
   const [chatOpen, setChatOpen] = useState(false)
@@ -24,21 +39,26 @@ function App() {
     return <Login onLogin={setUser} />
   }
 
+  // Wrapper for standalone pages to ensure they are fully visible below the fixed navbar
+  const PageWrapper = ({ children }) => (
+    <div style={{ paddingTop: '64px', minHeight: '100vh' }}>
+      {children}
+    </div>
+  )
+
   // ── Logged in → show app ──
   return (
     <>
-      <Navbar onLogout={() => setUser(null)} userRole={user.role} />
+      <Navbar onLogout={() => setUser(null)} userRole={user.role} userName={user.name} />
       <main>
-        <Hero />
-        <SafetyTips />
-        <EmergencyContacts />
-        <TrustedContacts />
-        <SafetyTools />
-        <JourneyTracker />
-        <SelfDefense />
-        <LegalRights />
-        <Resources />
-        <About />
+        <Routes>
+          <Route path="/" element={<MainHome />} />
+          <Route path="/safety-tips" element={<PageWrapper><SafetyTips /></PageWrapper>} />
+          <Route path="/self-defense" element={<PageWrapper><SelfDefense /></PageWrapper>} />
+          <Route path="/legal-rights" element={<PageWrapper><LegalRights /></PageWrapper>} />
+          <Route path="/resources" element={<PageWrapper><Resources /></PageWrapper>} />
+          <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
+        </Routes>
       </main>
       <Footer />
       <ChatBot open={chatOpen} onToggle={() => setChatOpen(!chatOpen)} />

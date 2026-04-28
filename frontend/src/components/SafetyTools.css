@@ -166,6 +166,131 @@
   text-decoration-color: rgba(34, 197, 94, 0.4);
 }
 
+/* ─── Fake Call UI ─── */
+.fake-call-caller-select {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.fake-call-caller-select select {
+  flex: 1;
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.fake-call-overlay {
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.fake-call-screen {
+  width: 100%;
+  height: 100%;
+  max-width: 400px;
+  background: linear-gradient(180deg, #1f2937, #0f172a);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 1.5rem 3rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.fake-call-avatar {
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.fake-caller-name {
+  font-size: 2.2rem;
+  font-weight: 300;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+.fake-call-status {
+  font-size: 1.1rem;
+  color: #9ca3af;
+  margin-bottom: 4rem;
+  font-weight: 400;
+}
+
+.fake-call-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 3rem;
+  width: 100%;
+  justify-content: center;
+  padding-bottom: 2rem;
+}
+
+.fake-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: none;
+  font-size: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  color: white;
+  transition: transform 0.2s, background 0.2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.fake-btn:hover {
+  transform: scale(1.08);
+}
+
+.fake-btn:active {
+  transform: scale(0.95);
+}
+
+.fake-btn-accept {
+  background: #22c55e;
+  animation: pulse-green 1.5s infinite;
+}
+
+.fake-btn-decline {
+  background: #ef4444;
+}
+
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+  70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
 @media (max-width: 640px) {
   .tools-grid {
     grid-template-columns: 1fr;

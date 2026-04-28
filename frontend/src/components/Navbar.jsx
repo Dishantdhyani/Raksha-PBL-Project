@@ -1,32 +1,61 @@
 import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import './Navbar.css'
 
 const navLinks = [
-  { id: 'hero', label: 'Home' },
-  { id: 'safety-tips', label: 'Safety Tips' },
-  { id: 'emergency', label: 'Emergency' },
-  { id: 'trusted-contacts', label: 'Contacts' },
-  { id: 'tools', label: 'Tools' },
-  { id: 'journey-tracker', label: 'Journey' },
-  { id: 'self-defense', label: 'Self-Defense' },
-  { id: 'legal-rights', label: 'Legal Rights' },
-  { id: 'resources', label: 'Resources' },
-  { id: 'about', label: 'About' },
+  { path: '/', hash: '#hero', id: 'hero', label: 'Home' },
+  { path: '/safety-tips', id: 'safety-tips', label: 'Safety Tips' },
+  { path: '/', hash: '#emergency', id: 'emergency', label: 'Emergency' },
+  { path: '/', hash: '#trusted-contacts', id: 'trusted-contacts', label: 'Contacts' },
+  { path: '/', hash: '#tools', id: 'tools', label: 'Tools' },
+  { path: '/', hash: '#journey-tracker', id: 'journey-tracker', label: 'Journey' },
+  { path: '/self-defense', id: 'self-defense', label: 'Self-Defense' },
+  { path: '/legal-rights', id: 'legal-rights', label: 'Legal Rights' },
+  { path: '/resources', id: 'resources', label: 'Resources' },
+  { path: '/about', id: 'about', label: 'About' },
 ]
 
-export default function Navbar({ onLogout, userRole }) {
+export default function Navbar({ onLogout, userRole, userName }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('hero')
+  const navigate = useNavigate()
+  const location = useLocation()
 
-  const scrollTo = (id) => {
-    const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  const handleNavClick = (e, link) => {
+    e.preventDefault()
+    if (link.path === '/') {
+      if (location.pathname !== '/') {
+        // Navigate home then scroll to hash
+        navigate('/', { state: { scrollTo: link.hash } })
+      } else {
+        // Already on home, just scroll
+        const el = document.getElementById(link.id)
+        if (el) el.scrollIntoView({ behavior: 'smooth' })
+      }
+    } else {
+      // Navigate to separate page
+      navigate(link.path)
+      window.scrollTo(0, 0)
+    }
     setMenuOpen(false)
   }
 
   useEffect(() => {
+    // If we just navigated back to home with a scroll target
+    if (location.pathname === '/' && location.state?.scrollTo) {
+      const hash = location.state.scrollTo
+      const el = document.querySelector(hash)
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth' })
+        }, 100)
+      }
+      // clear state so it doesn't happen again on refresh
+      window.history.replaceState({}, document.title)
+    }
+
     const handleScroll = () => {
-      const sections = navLinks.map(link => document.getElementById(link.id)).filter(Boolean)
+      const sections = navLinks.filter(l => l.path === '/').map(link => document.getElementById(link.id)).filter(Boolean)
       let currentSection = 'hero'
       for (let section of sections) {
         if (section.getBoundingClientRect().top <= window.innerHeight / 2) {
@@ -35,15 +64,21 @@ export default function Navbar({ onLogout, userRole }) {
       }
       setActiveSection(currentSection)
     }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+
+    if (location.pathname === '/') {
+      window.addEventListener('scroll', handleScroll, { passive: true })
+      return () => window.removeEventListener('scroll', handleScroll)
+    } else {
+      setActiveSection(location.pathname.substring(1)) // Remove leading slash
+    }
+  }, [location.pathname, location.state])
 
   return (
     <header className="navbar">
       <div className="navbar-inner">
+
         {/* Logo */}
-        <a href="#hero" onClick={(e) => { e.preventDefault(); scrollTo('hero') }} className="logo">
+        <a href="/" onClick={(e) => handleNavClick(e, navLinks[0])} className="logo">
           <span className="logo-icon">🛡️</span>
           <span className="logo-text">Raksha</span>
         </a>
@@ -62,13 +97,18 @@ export default function Navbar({ onLogout, userRole }) {
         {/* Nav links */}
         <nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
           {navLinks.map((link) => (
-            <button
+            <a
               key={link.id}
-              onClick={() => scrollTo(link.id)}
-              className={`nav-link ${activeSection === link.id ? 'active' : ''}`}
+              href={link.path === '/' ? link.hash : link.path}
+              onClick={(e) => handleNavClick(e, link)}
+              className={`nav-link ${
+                (location.pathname === '/' && activeSection === link.id) || 
+                (location.pathname !== '/' && location.pathname === link.path) 
+                  ? 'active' : ''
+              }`}
             >
               {link.label}
-            </button>
+            </a>
           ))}
         </nav>
 
@@ -76,7 +116,7 @@ export default function Navbar({ onLogout, userRole }) {
         <div className="navbar-user">
           {userRole && (
             <span className={`navbar-role-badge ${userRole === 'admin' ? 'navbar-role-badge--admin' : ''}`}>
-              {userRole === 'admin' ? '🔐 Admin' : '👤 User'}
+              {userRole === 'admin' ? '🔐 Admin' : `👤 ${userName || 'User'}`}
             </span>
           )}
           {onLogout && (
@@ -85,6 +125,7 @@ export default function Navbar({ onLogout, userRole }) {
             </button>
           )}
         </div>
+
       </div>
     </header>
   )
